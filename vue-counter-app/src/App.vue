@@ -3,16 +3,26 @@
     <div>
       <h4>The current count is...</h4>
       <h1>{{ count }}</h1>
-      <button @click="countBtn">-</button>
-      <button @click="countBtn">+</button>
+      <button @click="subtractCount">-</button>
+      <button @click="addToCount">+</button>
     </div>  
   </main>
 </template>
 
 <script setup>
-  import {ref} from "vue";
+  import { ref } from "vue";
   const count = ref(0);
 
+  const addToCount = () => {
+    count.value++;
+
+  }
+
+  const subtractCount = () => {
+    if(count.value > 0) {
+      count.value--; 
+    }
+  }
 </script>
 
 <style scoped>
