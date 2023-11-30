@@ -1,4 +1,4 @@
-# js_counter_app
+# CounterApplication_js_vs_vue.js
  Vue3 BootCamp Section1
 
 #js_counter_application 
