@@ -9,7 +9,7 @@
   </main>
 </template>
 
-<script setup>
+<!-- <script setup>  Composition API
   import { ref } from "vue";
   const count = ref(0);
 
@@ -23,6 +23,28 @@
       count.value--; 
     }
   }
+</script> -->
+
+<script> // options API
+export default {
+  data() {
+    return {
+      count: 0
+    }
+  },
+  methods: {
+    addToCount() {
+      this.count++;
+    },
+
+    subtractCount() {
+      if(this.count > 0) {
+        this.count--;
+      }
+    }
+  }
+
+}
 </script>
 
 <style scoped>
