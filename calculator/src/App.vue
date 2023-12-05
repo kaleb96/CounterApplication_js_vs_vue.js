@@ -26,7 +26,7 @@
             <button>0</button>
             <button>=</button>
             <button>+</button> -->
-            <div>{{ count }}</div>
+            <div>{{ addStr }}</div>
             <span v-for="(row, idx) in matrix" :key="idx"> <br>
             <button  @click="inputNum(row[cIdx])" v-for="(cell, cIdx) in row" :key="cIdx"> {{ row[cIdx] }} </button>
             </span>
@@ -39,7 +39,9 @@
 <script setup>
 import { ref } from 'vue'
 
-const count = ref('');
+// const count = ref('');
+// const operators = ref('');
+const addStr = ref('');
 
 const matrix = ref([
   ['c', '<'],
@@ -49,13 +51,26 @@ const matrix = ref([
   ['.', '0','=','+']
 ])
 
-const inputNum = (num) => {
+const inputNum = (param) => {
   // console.log('inputNum = ' + num );
-  count.value = num;
+  let value = ''
+  if(isNaN(param)) { //파라미터가 정수인 경우
+    
+    value = param;
+    // console.log('count.value = ' + count.value);
+
+  } else { // 기호인 경우
+    // operators.value = param;
+    value = param;
+    // console.log('operators.value = ' + operators.value);
+
+  }
+  addStr.value += value; //문자열 합치기
+
+
 }
 
 </script>
 
 <style>
-
 </style>
