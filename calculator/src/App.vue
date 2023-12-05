@@ -4,9 +4,28 @@
       <h1>Calculator</h1>
     </header>
     <main>
-      <div class="matrix">
-          <div v-for="(num, idx) in matrix" :key="idx">
-              <button>{{ 9 - idx }}</button> 
+      <div>
+          
+          <div class="buttonForm">
+            <div>Count Num</div>
+            <button>c</button>
+            <button>&#9003;</button> <br>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button> 
+            <button>&divide;</button> <br>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button> 
+            <button>x</button> <br>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button> 
+            <button>-</button> <br>
+            <button>.</button>
+            <button>0</button>
+            <button>=</button>
+            <button>+</button>
           </div>
       </div>
     </main>    
@@ -15,31 +34,8 @@
 
 <script setup>
 
-import { ref} from 'vue'
-
-const matrix = ref(9);
-
 </script>
 
 <style>
 
-main {
-  background-color: aliceblue;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.matrix {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.col {
-  flex:1;
-  text-align: center;
-  padding:10px;
-}
 </style>
