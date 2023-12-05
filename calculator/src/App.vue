@@ -7,7 +7,7 @@
       <div>
           
           <div class="buttonForm">
-            <div>Count Num</div>
+            <!-- <div>Count Num</div>
             <button>c</button>
             <button>&#9003;</button> <br>
             <button>7</button>
@@ -25,7 +25,11 @@
             <button>.</button>
             <button>0</button>
             <button>=</button>
-            <button>+</button>
+            <button>+</button> -->
+            <div>{{ count }}</div>
+            <span v-for="(row, idx) in matrix" :key="idx"> <br>
+            <button  @click="inputNum(row[cIdx])" v-for="(cell, cIdx) in row" :key="cIdx"> {{ row[cIdx] }} </button>
+            </span>
           </div>
       </div>
     </main>    
@@ -33,6 +37,22 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const count = ref('');
+
+const matrix = ref([
+  ['c', '<'],
+  ['7', '8', '9', '/'],
+  ['4', '5', '6', 'x'],
+  ['1', '2', '3', '-'],
+  ['.', '0','=','+']
+])
+
+const inputNum = (num) => {
+  // console.log('inputNum = ' + num );
+  count.value = num;
+}
 
 </script>
 
