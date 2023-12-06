@@ -7,26 +7,12 @@
       <div>
           
           <div class="buttonForm">
-            <!-- <div>Count Num</div>
-            <button>c</button>
-            <button>&#9003;</button> <br>
-            <button>7</button>
-            <button>8</button>
-            <button>9</button> 
-            <button>&divide;</button> <br>
-            <button>4</button>
-            <button>5</button>
-            <button>6</button> 
-            <button>x</button> <br>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button> 
-            <button>-</button> <br>
-            <button>.</button>
-            <button>0</button>
-            <button>=</button>
-            <button>+</button> -->
-            <div>{{ addStr }}</div>
+            <div>첫번째 숫자{{ firstNum }}</div>
+            <div>두 번째 연산자 {{ operatorStr }}</div>
+            <div>세 번째 숫자 {{ secondNum }}</div>
+            <div>네 번째 결과 지 {{ firstNum }} {{ operatorStr }} {{ secondNum }} = </div>
+            <div>결과 flag {{ flag }}</div>
+            <div></div>
             <span v-for="(row, idx) in matrix" :key="idx"> <br>
             <button  @click="inputNum(row[cIdx])" v-for="(cell, cIdx) in row" :key="cIdx"> {{ row[cIdx] }} </button>
             </span>
@@ -39,9 +25,11 @@
 <script setup>
 import { ref } from 'vue'
 
-// const count = ref('');
-// const operators = ref('');
-const addStr = ref('');
+
+const firstNum = ref(0);
+const operatorStr = ref('');
+const secondNum = ref(0);
+const flag = ref('');
 
 const matrix = ref([
   ['c', '<'],
@@ -50,24 +38,96 @@ const matrix = ref([
   ['1', '2', '3', '-'],
   ['.', '0','=','+']
 ])
+// ?
 
-const inputNum = (param) => {
-  // console.log('inputNum = ' + num );
-  let value = ''
-  if(isNaN(param)) { //파라미터가 정수인 경우
+
+const inputNum = (param) => { //버튼 input값에 따른 연산 판단
+  
+  let regex = /[0-9.]/g;
+
+ 
+  if(regex.test(param)) { // 정수 또는 '.' 인 경우
     
-    value = param;
-    // console.log('count.value = ' + count.value);
+    if(operatorStr.value == '') { // firstNum
+      
+      if(firstNum.value == 0) {
+        firstNum.value = param;
+      } else {
+        firstNum.value += param;
+      }
 
-  } else { // 기호인 경우
-    // operators.value = param;
-    value = param;
-    // console.log('operators.value = ' + operators.value);
+    } else {  // secondeNum
+      
+      if(secondNum.value == 0) {
+        secondNum.value = param;
+      } else {
+        secondNum.value += param;
+      }
+    }
+  
+  } else { // 연산자인 경우
+    
+    if((param == '=')) { // = 인경우, firstNum, operatorStr, secondNum이 있는 경우 -> 결과 연산!
+      
+      if(operatorStr != '') {
 
+        computeResult(operatorStr);
+      }
+
+    } else { // 연산자인 경우
+
+      operatorStr.value = param;
+    }
   }
-  addStr.value += value; //문자열 합치기
 
+}
 
+const computeResult = (param) => { // 연산자 구분, 계산
+  
+  let co = param.value; 
+  let value1 = parseFloat(firstNum.value);
+  let value2 = parseFloat(secondNum.value);
+  let result = '';
+  switch (co) {
+
+    case '-':
+      result = value1 - value2;
+      formatData(result);
+      break;
+    
+    case '+':
+      result = value1 + value2;
+      formatData(result);
+      break;
+    
+    case '/':
+      result = value1 / value2;
+      formatData(result);
+      break;
+    
+    case '%':
+      result = value1 % value2;
+      formatData(result);
+      break;
+    
+    case 'x':
+    result = value1 * value2;
+    formatData(result);
+    break;  
+
+    default:
+      console.log('정의 되지 않은 계산입니다.');
+      formatData(result);
+      break;
+  }
+}
+
+const formatData= (param) => { // 데이터 초기화
+    
+    firstNum.value = param;
+    secondNum.value = 0;
+    operatorStr.value = '';
+    flag.value = param;
 }
 
 </script>
