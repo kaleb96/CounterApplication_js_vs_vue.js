@@ -10,7 +10,7 @@
             <div>
               <span v-if="!secondNum">{{ firstNum }}</span>
               <span v-if="!secondNum">{{ operatorStr }}</span>
-              <span v-if="secondNum">{{ firstNum }} {{ operatorStr }} {{ secondNum }} = </span>
+              <span v-if="secondNum">{{ firstNum }}{{ operatorStr }}{{ secondNum }} = </span>
             </div>
             <div>결과 {{ flag }}</div>
             <div></div>
@@ -31,6 +31,7 @@ const firstNum = ref(0);
 const operatorStr = ref('');
 const secondNum = ref(0);
 const flag = ref('');
+const seq = ref(1);
 
 const matrix = ref([
   ['c', '<'],
@@ -39,46 +40,64 @@ const matrix = ref([
   ['1', '2', '3', '-'],
   ['.', '0','=','+']
 ])
-// ?
 
-
-const inputNum = (param) => { //버튼 input값에 따른 연산 판단
+// 버튼 입력시 데이터 처리
+const inputNum = (param) => {
   
   let regex = /[0-9.]/g;
-
- 
-  if(regex.test(param)) { // 정수 또는 '.' 인 경우
-    
-    if(operatorStr.value == '') { // firstNum
-      
-      if(firstNum.value == 0) {
-        firstNum.value = param;
-      } else {
-        firstNum.value += param;
-      }
-
-    } else {  // secondeNum
-      
-      if(secondNum.value == 0) {
-        secondNum.value = param;
-      } else {
-        secondNum.value += param;
-      }
-    }
+  let seqNum =  seq.value;
+  let test = regex.test(param);
   
-  } else { // 연산자인 경우
     
-    if((param == '=')) { // = 인경우, firstNum, operatorStr, secondNum이 있는 경우 -> 결과 연산!
-      
-      if(param != '') {
+  if(test) { // firstNum 또는 secondNum인 경우
 
+      if(seqNum === 1){ // firstNum
+        
+        if(operatorStr.value == '') { // 연산자 입력시 secondNum으로
+
+          if(firstNum.value == 0) {
+            firstNum.value = param;
+          
+          } else {
+            firstNum.value += param;
+          }
+
+        } else {
+          return seq.value = 2
+        }
+      }
+      
+      if(seqNum === 2) { // secondNum
+        
+        if(secondNum.value == 0) {
+          secondNum.value = param;
+        } else {
+          secondNum.value += param;
+        }
+      }
+
+      if(seqNum === 3) {
+        
+        seq.value = 1;
+        firstNum.value = 0;
+        secondNum.value = 0;
+        operatorStr.value = '';
+        flag.value = '';
+      }
+    
+    } else  { // operators
+      seq.value = 2;
+    if((param === '=')) { // 결과 연산
+
+      if(param != '') { // 결과연산일때 모든 값이 있을 경우
         computeResult(operatorStr);
       }
-
-    } else { // 연산자인 경우
-
+    
+    } else { // Clear all, Clear Entry 인 경우
+      
       if(param == 'c') { // c버튼 Clear All
         
+        seq.value = 1;
         firstNum.value = 0;
         secondNum.value = 0;
         operatorStr.value = '';
@@ -86,13 +105,16 @@ const inputNum = (param) => { //버튼 input값에 따른 연산 판단
 
       } else if(param == '<') { // < 버튼 Clear Entry
 
-        if(flag.value == '') {
+        if(flag.value == '') { // 첫번째 결과 연산인 경우
+
           let value1 = firstNum.value;
           let value2 = secondNum.value;
           let value3 = operatorStr.value;
           clearEntry(value1, value2, value3);
         
-        } else {
+        } else { // 2번째 결과 연산 인경우
+
+          seq.value = 1;
           firstNum.value = 0;
           secondNum.value = 0;
           operatorStr.value = '';
@@ -104,10 +126,10 @@ const inputNum = (param) => { //버튼 input값에 따른 연산 판단
       }
     }
   }
-
 }
 
-const computeResult = (param) => { // 연산자 구분, 계산
+ // 연산자 구분, 계산
+const computeResult = (param) => {
   
   let co = param.value; 
   let value1 = parseFloat(firstNum.value);
@@ -147,35 +169,33 @@ const computeResult = (param) => { // 연산자 구분, 계산
   }
 }
 
-const formatData= (param) => { // 데이터 초기화
+// 연산 이후 데이터 초기화
+const formatData= (param) => { 
     
+    seq.value = 3; //seq를 3으로 줄 경우 숫자를 입력하면 바로 clear all
     firstNum.value = param;
     secondNum.value = 0;
     operatorStr.value = '';
     flag.value = param;
 }
 
-const clearEntry = (value1, value2, value3) => { // Clear Entry 취소 
+// Clear Entry 취소 
+const clearEntry = (value1, value2, value3) => { 
   let nv = '';
+  console.log('seq.value = ' + seq.value)
+  if(seq.value === 1 && value3 == '') { // firstNum에서 ClearEntry 작동
 
-  if(value2) { // secondNum에 clear Entry 작동
-      
-      nv = [...value2].splice(0, value2.length-1);  
-      secondNum.value = nv.join('');
+    nv = [...value1].splice(0, value1.length-1);
+    firstNum.value = nv.join('');
   
-  } else if(value1 && !value2 && !value3) { //fisrtNum에  Clear Entry 작동
-
-      nv = [...value1].splice(0, value1.length-1);
-      firstNum.value = nv.join('');
-  
-  } else if(value1 && value3) { 
-    // firatNum, Operators있는 경우 Clear Entry 작동 X
- 
+  } else if(seq.value === 2) { // secondNum에서 ClearEntry 작동
+    
+    nv = [...value2].splice(0, value2.length-1);  
+    secondNum.value = nv.join('');
   } else {
-    console.log('check');
+      // firatNum, Operators있는 경우 Clear Entry 작동 X
   }
 
-  
 }
 </script>
 
