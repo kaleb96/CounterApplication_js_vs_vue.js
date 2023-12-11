@@ -1,45 +1,41 @@
 <template>
-  <div>
+  <div> 
     <header>
       <h1>Calculator</h1>
     </header>
-    <main>
       <div>
-          
-          <div class="buttonForm">
-            <div>
-              <span v-if="!secondNum">{{ firstNum }}</span>
-              <span v-if="!secondNum">{{ operatorStr }}</span>
-              <span v-if="secondNum">{{ firstNum }}{{ operatorStr }}{{ secondNum }} = </span>
-            </div>
-            <div>결과 {{ flag }}</div>
-            <div></div>
-            <span v-for="(row, idx) in matrix" :key="idx"> <br>
-            <button  @click="inputNum(row[cIdx])" v-for="(cell, cIdx) in row" :key="cIdx"> {{ row[cIdx] }} </button>
+        <v-container class="text-center">
+         <v-row justify="center">
+            <v-col md="3">
+            <v-btn min-width="255" max-width="255" >
+            <span v-if="!secondNum">{{ firstNum }}</span>
+            <span v-if="!secondNum">{{ operatorStr }}</span>
+            <span v-if="secondNum">{{ firstNum }}{{ operatorStr }}{{ secondNum }} = </span></v-btn> <br>
+            <span v-for="(row, idx) in matrix" :key="idx"> <v-btn @click="inputNum(row[cIdx])" v-for="(cell, cIdx) in row" :key="cIdx">{{ row[cIdx] }}</v-btn>
             </span>
-          </div>
+          </v-col>
+        </v-row>
+       </v-container>
       </div>
-    </main>    
-  </div>
+    </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-
 
 const firstNum = ref(0);
 const operatorStr = ref('');
 const secondNum = ref(0);
 const flag = ref('');
 const seq = ref(1);
-
 const matrix = ref([
-  ['c', '<'],
+  ['', '', 'c', '\u{21A4}'],
   ['7', '8', '9', '/'],
   ['4', '5', '6', 'x'],
   ['1', '2', '3', '-'],
   ['.', '0','=','+']
 ])
+
 
 // 버튼 입력시 데이터 처리
 const inputNum = (param) => {
@@ -47,8 +43,7 @@ const inputNum = (param) => {
   let regex = /[0-9.]/g;
   let seqNum =  seq.value;
   let test = regex.test(param);
-  
-    
+
   if(test) { // firstNum 또는 secondNum인 경우
 
       if(seqNum === 1){ // firstNum
@@ -103,13 +98,17 @@ const inputNum = (param) => {
         operatorStr.value = '';
         flag.value = '';
 
-      } else if(param == '<') { // < 버튼 Clear Entry
+      } else if(param == '\u{21A4}') { // < 버튼 Clear Entry
 
         if(flag.value == '') { // 첫번째 결과 연산인 경우
 
           let value1 = firstNum.value;
           let value2 = secondNum.value;
           let value3 = operatorStr.value;
+
+          if(value2 == 0 && value3 == '') 
+            seq.value=1;
+          console.log('values' + value1 + '  v2= ' + value2+ ' v3 = ' +value3);
           clearEntry(value1, value2, value3);
         
         } else { // 2번째 결과 연산 인경우
@@ -158,9 +157,9 @@ const computeResult = (param) => {
       break;
     
     case 'x':
-    result = value1 * value2;
-    formatData(result);
-    break;  
+      result = value1 * value2;
+      formatData(result);
+      break;  
 
     default:
       console.log('정의 되지 않은 계산입니다.');
@@ -182,17 +181,29 @@ const formatData= (param) => {
 // Clear Entry 취소 
 const clearEntry = (value1, value2, value3) => { 
   let nv = '';
-  console.log('seq.value = ' + seq.value)
-  if(seq.value === 1 && value3 == '') { // firstNum에서 ClearEntry 작동
-
-    nv = [...value1].splice(0, value1.length-1);
-    firstNum.value = nv.join('');
   
-  } else if(seq.value === 2) { // secondNum에서 ClearEntry 작동
+  console.log('seq.value = ' + seq.value)
+  
+  if(seq.value == 1 && value3 == '') { // firstNum에서 ClearEntry 작동
+    console.log('firstNum ClearEntry 작동');
     
+    if(firstNum.value != 0) {
+      nv = [...value1].splice(0, value1.length-1);
+      firstNum.value = nv.join('');
+    } else {
+      firstNum.value = 0;
+    }
+  } 
+  
+  if(seq.value == 2 && value2 != 0) { // secondNum에서 ClearEntry 작동
+    
+    console.log('secondNum ClearEntry 작동');
     nv = [...value2].splice(0, value2.length-1);  
     secondNum.value = nv.join('');
-  } else {
+  }  
+  
+  if(value1 != 0 && value3 != ''){
+    console.log('작동 X');
       // firatNum, Operators있는 경우 Clear Entry 작동 X
   }
 
@@ -200,4 +211,13 @@ const clearEntry = (value1, value2, value3) => {
 </script>
 
 <style>
+
+.col {
+  max-width: 300px;
+  min-width: 300px;
+}
+
+.result {
+  text-align:left;
+}
 </style>
